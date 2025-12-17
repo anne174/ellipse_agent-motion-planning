@@ -142,7 +142,7 @@ def inflate_walls(graph,radius):
                 neighbor=(wx+dx,wy+dy)
                 if graph.in_bounds(neighbor):
                     new_walls.add(neighbor)
-    return list(new_walls)
+    graph.walls=list(new_walls)
 
 #10*10地图
 diagram4 = GridWithWeights(10, 10)
@@ -169,6 +169,11 @@ diagram_20.walls = [
     (5, 12), (6, 13), (4, 14), (15, 5), (16, 4), (17, 6), 
     (8, 16), (9, 17)
 ]
+
+#新增；为了优化视觉效果——显示膨胀区
+# 使用 list() 创建副本，否则它会跟着变
+ORIGINAL_WALLS = list(diagram_20.walls)
+
 inflate_walls(diagram_20,1)
 # if (3, 2) in diagram_20.walls: diagram_20.walls.remove((3, 2))
 # if (2, 2) in diagram_20.walls: diagram_20.walls.remove((2, 2))

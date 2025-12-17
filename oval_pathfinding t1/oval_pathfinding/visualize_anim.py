@@ -1,7 +1,7 @@
 import pygame
 #import sys
 #import heapq # 需要重新导入这个以重写搜索逻辑用于演示
-from implementation import diagram_20, GridLocation, PriorityQueue, heuristic, reconstruct_path
+from implementation import diagram_20, GridLocation, PriorityQueue, heuristic, reconstruct_path,ORIGINAL_WALLS
 
 # --- 动画版 A* 搜索函数 ---
 # 我们把原本一次性跑完的函数，改成一个生成器
@@ -39,7 +39,8 @@ def a_star_search_generator(graph, start, goal):
 CELL_SIZE = 50
 MARGIN = 2
 colors = {
-    'wall': (20, 20, 20),
+    'wall': (20, 20, 20),# 实心墙 (黑色)
+    'inflated':(169,169,169),# 【新增】膨胀区
     'path': (0, 0, 255),
     'visited': (100, 200, 255),
     'current': (255, 255, 0), 
@@ -51,13 +52,15 @@ colors = {
 
 def draw_grid(screen, graph, came_from, current_node, cost_so_far, font, path=[]):
     screen.fill((0, 0, 0))
+
     for y in range(graph.height):
         for x in range(graph.width):
             node = (x, y)
             rect = pygame.Rect (x * CELL_SIZE + MARGIN, y * CELL_SIZE + MARGIN, 
                     CELL_SIZE - 2*MARGIN, CELL_SIZE - 2*MARGIN)
             
-            if node in graph.walls: color = colors['wall']
+            if node in ORIGINAL_WALLS: color = colors['wall']
+            elif node in graph.walls: color=colors['inflated'] # 膨胀区域显示
             elif node == (3, 1): color = colors['start'] # 硬编码起点用于演示
             elif node == (12, 16): color = colors['goal']  # 硬编码终点用于演示
             elif node in path: color = colors['path']
