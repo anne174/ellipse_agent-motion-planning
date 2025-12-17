@@ -112,9 +112,7 @@ class SquareGrid:
     #获取邻居
     def neighbors(self, id: GridLocation) -> Iterator[GridLocation]:
         (x, y) = id
-        neighbors = [(x+1, y), (x-1, y), (x, y-1), (x, y+1)] # E W N S
-        # see "Ugly paths" section for an explanation:
-        if (x + y) % 2 == 0: neighbors.reverse() # S N W E
+        neighbors = [(x+1, y), (x-1, y), (x, y-1), (x, y+1),(x+1,y+1),(x-1,y+1),(x-1,y-1),(x+1,y-1)]#增加为8方向的移动
         results = filter(self.in_bounds, neighbors)
         results = filter(self.passable, results)
         return results
@@ -130,6 +128,21 @@ class GridWithWeights(SquareGrid):
     #计算代价
     def cost(self, from_node: GridLocation, to_node: GridLocation) -> float:
         return self.weights.get(to_node, 1)
+
+def inflate_walls(graph,radius):
+    """让墙壁向外便后一圈：遍历现有墙壁，把它们周围的邻居也变成墙壁"""
+    original_walls=set(graph.walls)
+    new_walls=set(graph.walls)
+    for(wx,wy) in original_walls :
+        """遍历墙壁周围radius范围内的格子"""
+        for dx in range(-radius,radius+1):
+            for dy in range(-radius,radius+1):
+                if dx ==0 and dy ==0:
+                    continue
+                neighbor=(wx+dx,wy+dy)
+                if graph.in_bounds(neighbor):
+                    new_walls.add(neighbor)
+    return list(new_walls)
 
 #10*10地图
 diagram4 = GridWithWeights(10, 10)
@@ -156,6 +169,16 @@ diagram_20.walls = [
     (5, 12), (6, 13), (4, 14), (15, 5), (16, 4), (17, 6), 
     (8, 16), (9, 17)
 ]
+inflate_walls(diagram_20,1)
+# if (3, 2) in diagram_20.walls: diagram_20.walls.remove((3, 2))
+# if (2, 2) in diagram_20.walls: diagram_20.walls.remove((2, 2))
+# if (4, 2) in diagram_20.walls: diagram_20.walls.remove((4, 2))
+# if (4, 1) in diagram_20.walls: diagram_20.walls.remove((4, 1))
+# if (2, 1) in diagram_20.walls: diagram_20.walls.remove((2, 1))
+# if (3, 0) in diagram_20.walls: diagram_20.walls.remove((3, 0))
+# if (2, 0) in diagram_20.walls: diagram_20.walls.remove((2, 0))
+# if (4, 0) in diagram_20.walls: diagram_20.walls.remove((4, 0))
+
 diagram_20.weights = {loc: 5 for loc in [
     (12, 1), (12, 2), (12, 3), (12, 4), (12, 5), 
     (13, 1), (13, 2), (13, 3), (13, 4), (13, 5), 
@@ -301,9 +324,11 @@ def test_with_custom_order(neighbor_order):
 class GridWithAdjustedWeights(GridWithWeights):
     def cost(self, from_node, to_node):
         prev_cost = super().cost(from_node, to_node)
-        nudge = 0
         (x1, y1) = from_node
         (x2, y2) = to_node
-        if (x1 + y1) % 2 == 0 and x2 != x1: nudge = 1
-        if (x1 + y1) % 2 == 1 and y2 != y1: nudge = 1
-        return prev_cost + 0.001 * nudge
+        if  x1!=x2 and y1!=y2:
+            return prev_cost*1.141
+        else:
+            return prev_cost
+
+
