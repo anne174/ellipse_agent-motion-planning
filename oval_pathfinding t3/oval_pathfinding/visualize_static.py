@@ -4,7 +4,7 @@ import sys
 from implementation import diagram_20, a_star_search, reconstruct_path
 
 # --- 1. 配置参数 ---
-CELL_SIZE = 35    # 每个格子在屏幕上的大小 (像素)
+CELL_SIZE = 20  # 每个格子在屏幕上的大小 (像素)
 MARGIN = 2        # 格子之间的缝隙
 # 根据地图尺寸自动计算窗口大小
 WINDOW_WIDTH = diagram_20.width * CELL_SIZE
@@ -27,7 +27,7 @@ def main():
     # --- 3. 运行算法 ---
     # 这里直接调用 implementation.py 里的逻辑
     start = (3, 1)
-    goal = (12, 16)
+    goal = (25,25)
     came_from, cost_so_far = a_star_search(diagram_20, start, goal)
     path = reconstruct_path(came_from, start, goal)
 

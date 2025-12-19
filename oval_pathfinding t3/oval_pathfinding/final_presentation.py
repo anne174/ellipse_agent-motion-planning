@@ -5,7 +5,7 @@ from implementation import diagram_20
 from visualize_anim import a_star_search_generator, draw_grid
 from ellipse_agent import EllipseAgent
 
-CELL_SIZE = 35
+CELL_SIZE = 20
 WINDOW_WIDTH = diagram_20.width * CELL_SIZE
 WINDOW_HEIGHT = diagram_20.height * CELL_SIZE
 
@@ -18,7 +18,7 @@ def main():
     clock = pygame.time.Clock()
     
     # 初始化
-    start, goal = (3, 1), (12, 16)
+    start, goal = (3, 1), (25,25)
     search_generator = a_star_search_generator(diagram_20, start, goal)
     
     # 状态变量
@@ -56,7 +56,7 @@ def main():
                     # 初始化智能体
                     sx = start[0] * CELL_SIZE + CELL_SIZE // 2
                     sy = start[1] * CELL_SIZE + CELL_SIZE // 2
-                    agent = EllipseAgent(sx, sy, area_constant=1500)
+                    agent = EllipseAgent(sx, sy, area_constant=850)
                     background_surface = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
                     draw_grid(background_surface, diagram_20, came_from, current_node, cost_so_far, font, display_path)
             except StopIteration:
@@ -64,7 +64,7 @@ def main():
 
         # --- 阶段二：运动 ---
         else:
-            clock.tick(30)
+            clock.tick(65)
            # 1. 智能控制逻辑
             if agent and path_index < len(final_path) - 1:
                 curr_node = final_path[path_index]

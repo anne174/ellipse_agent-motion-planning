@@ -36,7 +36,7 @@ def a_star_search_generator(graph, start, goal):
                 came_from[next] = current
 
 # --- 绘图逻辑 ---
-CELL_SIZE = 35
+CELL_SIZE = 20
 MARGIN = 2
 colors = {
     'wall': (20, 20, 20),# 实心墙 (黑色)
@@ -62,7 +62,7 @@ def draw_grid(screen, graph, came_from, current_node, cost_so_far, font, path=[]
             if node in ORIGINAL_WALLS: color = colors['wall']
             elif node in graph.walls: color=colors['inflated'] # 膨胀区域显示
             elif node == (3, 1): color = colors['start'] # 硬编码起点用于演示
-            elif node == (12, 16): color = colors['goal']  # 硬编码终点用于演示
+            elif node == (25, 25): color = colors['goal']  # 硬编码终点用于演示
             elif node in path: color = colors['path']
             elif node == current_node: color = colors['current'] # 高亮当前头节点
             elif node in came_from: color = colors['visited']
@@ -92,7 +92,7 @@ def main():
     pygame.display.set_caption("A* 算法 可视化")
     clock = pygame.time.Clock()
     
-    start, goal = (3, 1), (12, 16)
+    start, goal = (3, 1), (25, 25)
     
     # 初始化生成器
     search_generator = a_star_search_generator(diagram_20, start, goal)

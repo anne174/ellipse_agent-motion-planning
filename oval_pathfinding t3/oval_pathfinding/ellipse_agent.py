@@ -2,7 +2,7 @@ import pygame
 import math
 
 class EllipseAgent:
-    def __init__(self, center_x, center_y, area_constant=1500):
+    def __init__(self, center_x, center_y, area_constant=850):
         # 1. 物理属性
         self.x = center_x
         self.y = center_y
