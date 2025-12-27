@@ -186,7 +186,7 @@ def a_star_search_deformable(start, goal, grid):
                 req_a, req_b, is_feasible = calculate_shape(limit_w, limit_h)
 
                 if is_feasible:
-                    move_cost = math.sqrt(dx ** 2 + dy ** 2)  # 直线1，斜线1.414
+                    move_cost = math.sqrt(dx ** 2 + dy ** 2)  # 直线1，斜线1.4SS14
                     tentative_g = g[current] + move_cost
 
                     if tentative_g < g.get((nx, ny), float('inf')):

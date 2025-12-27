@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Protocol, Iterator, Tuple, TypeVar, Optional
 #Protocol（协议）；Iterator(迭代器)；Tuple(元组)表示一个固定长度、不可变的序列；
 #TypeVar(类型变量)；Optional(可选)表示这个变量既可以是某种类型，也可以是 None；
+import math
 T = TypeVar('T')
 #定义一个通用的类型变量，名字叫 T
 Location = TypeVar('Location')
@@ -133,7 +134,7 @@ class GridWithWeights(SquareGrid):
         # 判断是否是斜向移动：
         # 如果横坐标变了(x1!=x2) 且 纵坐标也变了(y1!=y2)，说明是斜着走的
         if x1 != x2 and y1 != y2:
-            return 2  # 斜向代价
+            return math.sqrt(2)  # 斜向代价
 
         # 否则是直走
         return 1
@@ -152,17 +153,6 @@ def inflate_walls(graph,radius):
                 if graph.in_bounds(neighbor):
                     new_walls.add(neighbor)
     graph.walls=list(new_walls)
-
-#10*10地图
-diagram4 = GridWithWeights(10, 10)
-diagram4.walls = [(1, 7), (1, 8), (2, 7), (2, 8), (3, 7), (3, 8)]
-diagram4.weights = {loc: 5 for loc in [(3, 4), (3, 5), (4, 1), (4, 2),
-                                       (4, 3), (4, 4), (4, 5), (4, 6),
-                                       (4, 7), (4, 8), (5, 1), (5, 2),
-                                       (5, 3), (5, 4), (5, 5), (5, 6),
-                                       (5, 7), (5, 8), (6, 2), (6, 3),
-                                       (6, 4), (6, 5), (6, 6), (6, 7),
-                                       (7, 3), (7, 4), (7, 5)]}
 
 #20*20地图
 diagram_20 = GridWithWeights(40, 40)
@@ -212,15 +202,6 @@ inflate_walls(diagram_20,1)
 # if (3, 0) in diagram_20.walls: diagram_20.walls.remove((3, 0))
 # if (2, 0) in diagram_20.walls: diagram_20.walls.remove((2, 0))
 # if (4, 0) in diagram_20.walls: diagram_20.walls.remove((4, 0))
-
-diagram_20.weights = {loc: 5 for loc in [
-    (12, 1), (12, 2), (12, 3), (12, 4), (12, 5),
-    (13, 1), (13, 2), (13, 3), (13, 4), (13, 5),
-    (14, 1), (14, 2), (14, 3), (14, 4), (14, 5),
-    (15, 1), (15, 2), (15, 3), (15, 4), (15, 5),
-    (16, 1), (16, 2), (16, 3), (16, 4), (16, 5),
-    (17, 1), (17, 2), (17, 3), (17, 4), (17, 5)
-]}
 
 import heapq
 
@@ -322,15 +303,20 @@ def reconstruct_path(came_from: dict[Location, Location],
     path.append(start) # optional
     path.reverse() # optional
     return path
-#测试死路场景
-diagram_nopath = GridWithWeights(10, 10)
-diagram_nopath.walls = [(5, row) for row in range(10)]
 
-#曼哈顿距离
+# #曼哈顿距离
+# def heuristic(a: GridLocation, b: GridLocation) -> float:
+#     (x1, y1) = a
+#     (x2, y2) = b
+#     return (abs(x1-x2) + abs(y1-y2))
+
+#欧几里得距离
 def heuristic(a: GridLocation, b: GridLocation) -> float:
     (x1, y1) = a
     (x2, y2) = b
-    return (abs(x1-x2) + abs(y1-y2))
+    # 使用欧几里得距离
+    return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+
 
 #允许自定义搜索邻居的顺序
 class SquareGridNeighborOrder(SquareGrid):
@@ -341,28 +327,6 @@ class SquareGridNeighborOrder(SquareGrid):
         results = filter(self.passable, results)
         return list(results)
 
-#验证和展示“搜索邻居的顺序”是如何影响路径规划结果的
-def test_with_custom_order(neighbor_order):
-    if neighbor_order:
-        g = SquareGridNeighborOrder(30, 15)
-        g.NEIGHBOR_ORDER = neighbor_order
-    else:
-        g = SquareGrid(30, 15)
-    g.walls = DIAGRAM1_WALLS
-    start, goal = (8, 7), (27, 2)
-    came_from = breadth_first_search(g, start, goal)
-    draw_grid(g, path=reconstruct_path(came_from, start=start, goal=goal),
-              point_to=came_from, start=start, goal=goal)
 
-#打破平局，让路径更直（未使用）
-class GridWithAdjustedWeights(GridWithWeights):
-    def cost(self, from_node, to_node):
-        prev_cost = super().cost(from_node, to_node)
-        (x1, y1) = from_node
-        (x2, y2) = to_node
-        if  x1!=x2 and y1!=y2:
-            return prev_cost*1.141
-        else:
-            return prev_cost
 
 
